@@ -19,8 +19,9 @@ sub handle_error {
 my $run_id        = time();
 my $exchange_name = 'mrc_test_' . $run_id;
 my $queue_name    = 'mrc_test_queue' . $run_id;
+my $routing_key   = 'mrc_test_routing_key' . $run_id;
 
-my $url = $ENV{MOJO_RABBITMQ_URL} || 'rabbitmq://guest:guest@127.0.0.1:5672/?exchange=' . $exchange_name . '&queue=' . $queue_name;
+my $url = $ENV{MOJO_RABBITMQ_URL} || 'rabbitmq://guest:guest@127.0.0.1:5672/?exchange=' . $exchange_name . '&queue=' . $queue_name . '&routing_key=' . $routing_key;
 
 Mojo::IOLoop->timer(    # Global test timeout
   10 => sub {
@@ -61,7 +62,7 @@ $client->on(
                 my $bind = $channel->bind_queue(
                   exchange    => $exchange_name,
                   queue       => $queue_name,
-                  routing_key => $queue_name,
+                  routing_key => $routing_key,
                 );
                 $bind->catch(handle_error('Failed to bind queue'));
                 $bind->on(
@@ -70,7 +71,7 @@ $client->on(
 
                     my $publish = $channel->publish(
                       exchange    => $exchange_name,
-                      routing_key => $queue_name,
+                      routing_key => $routing_key,
                       body        => 'Test message'
                     );
                     $publish->on(success => sub {

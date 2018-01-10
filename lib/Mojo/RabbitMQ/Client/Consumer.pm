@@ -24,6 +24,7 @@ sub start {
       my $query         = $client->url->query;
       my $exchange_name = $query->param('exchange');
       my $queue_name    = $query->param('queue');
+      my $routing_key   = $query->param('routing_key');
 
       $self->emit('connect');
 
@@ -47,7 +48,7 @@ sub start {
               my $bind = $channel->bind_queue(
                 exchange    => $exchange_name,
                 queue       => $queue_name,
-                routing_key => $queue_name,
+                routing_key => $routing_key,
               );
               $bind->on(
                 success => sub {
